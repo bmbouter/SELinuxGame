@@ -54,16 +54,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "selinuxgame" do |selinuxgame|
     selinuxgame.vm.host_name = "selinuxgame.example.com"
 
-    VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
-        # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
-        # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
-        # mounts on non-empty directories.
-        # selinuxgame.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
-
-        # Comment this out if you use a different filesystem (like sshfs)
-        selinuxgame.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
-    end
-
     selinuxgame.vm.provider :libvirt do |domain, override|
         domain.cpus = 4
         # In some cases, the guest gets stuck at "Waiting for domain to get an IP address..." if
