@@ -13,8 +13,8 @@
     mode: 0755
 
 - name: install bashrc
-  template:
-    src: templates/bashrc.j2
+  copy:
+    src: bashrc
     dest: "{{ unprivileged_homedir }}/.bashrc"
 
 - name: install vimrc
@@ -25,3 +25,8 @@
 - copy:
     src: motd
     dest: /etc/motd
+
+- name: Install the scenario prompt
+  copy:
+    src: "scenarios/{{ scenario_name }}.md"
+    dest: /home/vagrant/.scenario.txt

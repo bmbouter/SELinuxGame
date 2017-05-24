@@ -1,0 +1,68 @@
+- name: Install clamav
+  package: name={{ item }} state=present
+  with_items:
+    - clamav-server
+#    - clamav-data
+    - clamav
+    - clamav-scanner
+
+- name: enabling the clamd config file
+  lineinfile:
+    path: /etc/clamd.d/scan.conf
+    regexp: '^Example'
+    state: absent
+
+- name: configuring clamd for TCP sockets
+  lineinfile:
+    path: /etc/clamd.d/scan.conf
+    regexp: '^TCPSocket 3310'
+    insertafter: '^#TCPSocket'
+    line: 'TCPSocket 3310'
+
+- name: configuring clamd to run in the foreground for systemd
+  lineinfile:
+    path: /etc/clamd.d/scan.conf
+    regexp: '^Foreground yes'
+    insertafter: '^#Foreground yes'
+    line: 'Foreground yes'
+
+- name: install the clamd systemd unit file
+  copy:
+    src: clamd.service
+    dest: /usr/lib/systemd/system/clamd.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: force systemd to reread configs
+  systemd: daemon_reload=yes name=clamd
+
+- name: Ensure the email_attachments directory exists
+  file:
+    path: /mnt/email_attachments
+    state: directory
+    owner: root
+    group: clamscan
+    mode: 0755
+
+- file:
+    path: "{{ item }}"
+    state: touch
+    owner: root
+    group: clamscan
+  with_items:
+    - /mnt/email_attachments/S981AS4_1.zip
+    - /mnt/email_attachments/Q1f41KD_1.exe
+    - /mnt/email_attachments/89SR1AG_1.exe
+
+- name: restart clamd to ensure its running
+  systemd:
+    state: restarted
+    name: clamd
+
+- name: Symlink config file for client library to use
+  file:
+    path: /etc/clamd.conf
+    src: /etc/clamd.d/scan.conf
+    state: link
+    force: yes

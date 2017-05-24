@@ -23,3 +23,4 @@
   roles:
     - core
     - { role: vagrant, when: use_vagrant_role }
+    - clamav
