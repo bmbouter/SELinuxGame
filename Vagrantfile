@@ -45,7 +45,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
          # use_debug_role: true,
          # This role is required when provisioning in vagrant
          use_vagrant_role: true,
-         scenario_name: 'broken_antivirus',
+         #### Scenarios ####
+         #scenario_name: 'broken_antivirus',
+         scenario_name: 'enabling_selinux',
+         #### End Scenarios ####
          # The selinuxgame playbook does not work without python3
          ansible_python_interpreter: '/usr/bin/python3'
       }

@@ -1,0 +1,21 @@
+- name: Disabling SELinux
+  replace:
+    path: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+    replace: 'SELINUX=disabled'
+
+- name: Preparing to Reboot
+  become: true
+  copy:
+    src: delay_reboot.sh
+    dest: ~/delay_reboot.sh
+
+- name: Rebooting the server
+  become: true
+  shell: nohup sh ~/delay_reboot.sh &
+
+- name: Cleaning Up
+  become: true
+  file:
+    path: ~/delay_reboot.sh
+    state: absent
