@@ -4,8 +4,10 @@
 - name: Install basic packages
   package: name={{ item }} state=present
   with_items:
+      - ansible
       - bash-completion
       - fedora-easy-karma
+      - git
       - htop
       - screen
       - tmux

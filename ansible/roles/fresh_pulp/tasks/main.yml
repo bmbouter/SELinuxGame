@@ -1,0 +1,40 @@
+- name: Check if Pulp is already installed
+  command: rpm -q pulp-server
+  register: pulp_installed
+  ignore_errors: True
+
+- name: Cloning the pulp_packaging repo
+  git:
+    repo: 'https://github.com/pulp/pulp_packaging.git'
+    dest: /home/vagrant/pulp_packaging
+
+- name: Install Pulp via playbook
+  command: ansible-playbook -i "localhost," -c local /home/vagrant/pulp_packaging/ci/ansible/pulp_server.yaml
+  when: "'package pulp-server is not installed' in pulp_installed.stdout"
+
+- name: Stop Pulp Celery Processes and Streamer
+  service:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - pulp_resource_manager
+    - pulp_workers
+    - pulp_celerybeat
+    - pulp_streamer
+
+- name: Remove pulp-streamer policy
+  command: semodule -r pulp-streamer
+  become: yes
+  register: command_result
+  ignore_errors: True
+
+- name: Remove pulp-celery policy
+  command: semodule -r pulp-celery
+  become: yes
+  register: command_result
+  ignore_errors: True
+
+- name: Delete pulp_packaging checkout
+  file:
+    path: /home/vagrant/pulp_packaging
+    state: absent

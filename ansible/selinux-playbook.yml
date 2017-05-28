@@ -23,4 +23,4 @@
   roles:
     - core
     - { role: vagrant, when: use_vagrant_role }
-    - disable_selinux
+    - fresh_pulp

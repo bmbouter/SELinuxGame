@@ -1,8 +1,6 @@
 - name: Disabling SELinux
-  replace:
-    path: /etc/selinux/config
-    regexp: 'SELINUX=enforcing'
-    replace: 'SELINUX=disabled'
+  selinux:
+    state: disabled
 
 - name: Preparing to Reboot
   become: true
