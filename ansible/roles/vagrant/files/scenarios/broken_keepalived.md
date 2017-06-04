@@ -23,3 +23,4 @@ you restart `keepalived` with SELinux enforcing.
 Objective:
 
 * Determine how to start `keepalived` with SELinux enabled and without scary AVC denials.
+
