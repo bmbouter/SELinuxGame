@@ -1,0 +1,20 @@
+- name: Install httpd
+  package:
+    name: httpd
+    state: present
+
+- copy:
+    src: static_site.conf
+    dest: /etc/httpd/conf.d/static_site.conf
+
+- name: Creates the /var/static_site directory
+  file: path=/var/static_site state=directory
+
+- copy:
+    src: index.html
+    dest: /var/static_site/index.html
+
+- name: restart httpd to ensure it receives the new config
+  systemd:
+    state: restarted
+    name: httpd

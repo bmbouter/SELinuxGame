@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
   # time of this writing, I could set this setting like this for the latest F24 image:
   # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
-  config.vm.box = "fedora/25-cloud-base"
+  config.vm.box = "f25base"
 
   # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
   # requires the vagrant-hostmanager plugin to be installed
@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
-  scenarios = ['broken_antivirus', 'new_ways', 'fresh_pulp', 'stayin_alive']
+  scenarios = ['broken_antivirus', 'fresh_pulp', 'new_ways', 'static', 'stayin_alive']
 
   scenarios.each do |scenario|
       # Create the "selinuxgame" box
