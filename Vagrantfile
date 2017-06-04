@@ -48,7 +48,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
          #### Scenarios ####
          #scenario_name: 'broken_antivirus',
          #scenario_name: 'enabling_selinux',
-         scenario_name: 'fresh_pulp',
+         #scenario_name: 'fresh_pulp',
+         scenario_name: 'broken_keepalived',
          #### End Scenarios ####
          # The selinuxgame playbook does not work without python3
          ansible_python_interpreter: '/usr/bin/python3'
