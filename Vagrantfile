@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
-  scenarios = ['broken_antivirus', 'enabling_selinux', 'fresh_pulp', 'broken_keepalived']
+  scenarios = ['broken_antivirus', 'new_ways', 'fresh_pulp', 'stayin_alive']
 
   scenarios.each do |scenario|
       # Create the "selinuxgame" box
@@ -61,11 +61,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         selinuxgame.vm.provision "ansible" do |ansible|
             ansible.playbook = "ansible/selinux-playbook.yml"
             ansible.extra_vars = {
-               # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
-               # (you probably don't, unless you know you do)
-               # use_debug_role: true,
-               # This role is required when provisioning in vagrant
-               use_vagrant_role: true,
                scenario_name: scenario,
                # The selinuxgame playbook does not work without python3
                ansible_python_interpreter: '/usr/bin/python3'
