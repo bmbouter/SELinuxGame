@@ -23,4 +23,7 @@
   roles:
     - core
     - { role: vagrant, when: use_vagrant_role }
-    - keepalived
+    - { role: keepalived, when: scenario_name == 'broken_keepalived' }
+    - { role: fresh_pulp, when: scenario_name == 'fresh_pulp' }
+    - { role: disable_selinux, when: scenario_name == 'enabling_selinux' }
+    - { role: clamav, when: scenario_name == 'broken_antivirus' }
