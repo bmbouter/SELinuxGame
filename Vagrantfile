@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
-  scenarios = ['broken_antivirus', 'fresh_pulp', 'new_ways', 'static', 'stayin_alive']
+  scenarios = ['broken_antivirus', 'fresh_pulp', 'new_ways', 'static', 'status_check', 'stayin_alive']
 
   scenarios.each do |scenario|
       # Create the "selinuxgame" box
