@@ -6,24 +6,22 @@
   [
     {
       "type": "virtualbox-ovf",
-      "source_path": "{{ ovf_path }}",
+      "source_path": "{{user `ovf_path` }}",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_wait_timeout": "60s" ,
       "headless": true,
       "boot_wait": "10s",
-      {% raw %}
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--memory", "4096"]
       ],
-      {% endraw %}
       "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now"
     },
     {
       "type": "qemu",
       "accelerator": "kvm",
-      "iso_url": "{{ img_path }}",
+      "iso_url": "{{user `img_path` }}",
       "iso_checksum_type": "none",
       "qemu_binary": "qemu-kvm",
       "ssh_username": "vagrant",
@@ -60,7 +58,7 @@
     },
         {
           "type": "ansible",
-          "playbook_file": "~/SELinuxGame/ansible/selinux-playbook.yml",
+          "playbook_file": "/root/SELinuxGame/ansible/selinux-playbook.yml",
           "extra_arguments": [ "--extra-vars", "use_vagrant_role=true scenario_name={{user `scenario_name`}}" ]
         }
   ],
