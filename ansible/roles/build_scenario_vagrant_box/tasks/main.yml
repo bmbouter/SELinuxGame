@@ -1,0 +1,50 @@
+- name: Add F26 virtualbox
+  command: vagrant box add fedora/26-cloud-base --provider virtualbox --force
+  # become: no
+  register: check_if_added
+  until: not check_if_added | failed
+
+- debug:
+    var: ansible_user_dir
+
+- name: Find ovf file for Fedora box
+  find:
+    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-26-cloud-base
+    recurse: yes
+    patterns: 'box.ovf'
+  register: results
+  become_user: "{{ ansible_user }}"
+
+- assert:
+    that: results['matched'] == 1
+    msg: "More than one .ovf files were found for Fedora box"
+
+- name: Set ovf file path
+  set_fact:
+    ovf_path: "{{ results['files'][0]['path'] }}"
+
+- name: Get user's home directory
+  getent:
+    database: passwd
+    key: '{{ ansible_user }}'
+    split: ':'
+
+- name: Set variable referencing user's home directory
+  set_fact:
+    ansible_user_home: "{{ getent_passwd[ansible_user][4] }}"
+
+- name: Export packer template
+  template:
+    src: pulpcore.json.jj2
+    dest: "{{ ansible_user_home }}/pulpcore.json"
+
+- name: Clone scenarios onto build box
+  git:
+    repo: git@github.com:bmbouter/SELinuxGame.git
+    dest: "{{ ansible_user_home }}/SELinuxGame"
+    update: yes
+
+- name: Build image
+  command: packer build -var 'vagrant_cloud_token'={{ vagrant_cloud_token }} -var 'scenario_name={{ scenario_name }} -force -parallel=false {{ ansible_user_home }}/SELinuxGame/packer-templates/selinux_scenario.json
+  async: 0
+  poll: 0

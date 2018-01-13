@@ -1,53 +1,70 @@
 {
   "variables": {
-    "scenario_name": "",
-    "iso_url": "",
-    "iso_md5_checksum": ""
+    "vagrant_cloud_token": ""
   },
   "builders":
   [
     {
-      "type": "qemu",
-      "iso_url": "{{user `iso_url`}}",
-      "iso_checksum": "{{user `iso_md5_checksum`}}",
-      "iso_checksum_type": "md5",
-      "output_directory": "/home/dkliban/SELinuxGame",
-      "shutdown_command": "sudo init 0",
-      "disk_size": 42949.7,
-      "disk_image": "true",
-      "format": "qcow2",
-      "headless": true,
-      "accelerator": "kvm",
-      "http_directory": "httpdir",
-      "http_port_min": 10082,
-      "http_port_max": 10089,
-      "ssh_host_port_min": 2222,
-      "ssh_host_port_max": 2229,
+      "type": "virtualbox-ovf",
+      "source_path": "{{ ovf_path }}",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
-      "ssh_wait_timeout": "300s",
-      "vm_name": "selinuxgame",
-      "net_device": "virtio-net",
-      "disk_interface": "virtio",
-      "boot_wait": "5s",
-      "boot_command": [ ]
+      "ssh_wait_timeout": "60s" ,
+      "headless": true,
+      "boot_wait": "10s",
+      {% raw %}
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "4096"]
+      ],
+      {% endraw %}
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now"
+    },
+    {
+      "type": "qemu",
+      "accelerator": "kvm",
+      "iso_url": "{{ img_path }}",
+      "iso_checksum_type": "none",
+      "qemu_binary": "qemu-kvm",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "60s",
+      "headless": true,
+      "boot_wait": "10s",
+      "disk_image": true,
+      "disk_size": 40960,
+      "qemuargs": [
+        [ "-m", "4096M" ]
+      ],
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now"
     }
   ],
   "provisioners":
-          [
-            {
-              "type": "ansible",
-              "playbook_file": "SELinuxGame/ansible/selinux-playbook.yml",
-              "extra_arguments": [ "--extra-vars", "ansible_python_interpreter=/usr/bin/python3 use_vagrant_role=true scenario_name={{user `scenario_name`}}" ]
-            }
-          ],
+  [
+    {
+      "type":"shell",
+      "only": ["virtualbox-ovf"],
+      "inline": [
+        "echo 'nameserver 8.8.4.4' >> sudo /etc/resolv.conf",
+        "sudo mkdir -p /tmp/vboxguest",
+        "sudo mount -t iso9660 -o loop /home/vagrant/VBoxGuestAdditions.iso /tmp/vboxguest",
+        "cd /tmp/vboxguest",
+        "sudo dnf -y install dkms kernel-devel-$(uname -r) gcc",
+        "sudo ./VBoxLinuxAdditions.run",
+        "cd /tmp",
+        "sudo umount /tmp/vboxguest",
+        "sudo rmdir /tmp/vboxguest",
+        "rm /home/vagrant/VBoxGuestAdditions.iso"
+      ]
+    },
+        {
+          "type": "ansible",
+          "playbook_file": "~/SELinuxGame/ansible/selinux-playbook.yml",
+          "extra_arguments": [ "--extra-vars", "use_vagrant_role=true scenario_name={{user `scenario_name`}}" ]
+        }
+  ],
   "post-processors":
-          [
-            {
-              "type": "vagrant",
-              "vagrantfile_template": "SELinuxGame/packer_templates/Vagrantfile",
-              "output": "{{user `scenario_name`}}.box"
-            }
-          ]
+  [
+  ]
 }

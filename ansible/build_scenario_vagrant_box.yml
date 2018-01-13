@@ -1,0 +1,4 @@
+---
+- hosts: all
+  roles:
+    - role: build_scenario_vagrant_box
