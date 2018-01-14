@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
 
       config.vm.synced_folder ".", "/vagrant", disabled: true
 
-      config.vm.provider "libvirt" do |vm|
+      config.vm.provider "{{build_type}}" do |vm|
          vm.memory = "1024"
       end
 end

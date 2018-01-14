@@ -58,11 +58,26 @@
     },
         {
           "type": "ansible",
-          "playbook_file": "/root/SELinuxGame/ansible/selinux-playbook.yml",
-          "extra_arguments": [ "--extra-vars", "use_vagrant_role=true scenario_name={{user `scenario_name`}}" ]
+          "playbook_file": "/var/lib/selinuxgame/SELinuxGame/ansible/selinux-playbook.yml",
+          "extra_arguments": [ "--extra-vars", "ansible_python_interpreter=/usr/bin/python3 use_vagrant_role=true scenario_name={{user `scenario_name`}}" ],
+          "user": "vagrant"
         }
   ],
   "post-processors":
   [
+    [
+      {
+        "type": "vagrant",
+        "vagrantfile_template": "/var/lib/selinuxgame/SELinuxGame/packer_templates/Vagrantfile",
+        "output": "/var/lib/selinuxgame/{{user `scenario_name`}}_{{.Provider}}.box"
+      },
+      {
+        "type": "vagrant-cloud",
+        "access_token": "{{user `vagrant_cloud_token`}}",
+        "box_tag": "selinuxgame/{{user `scenario_name` }}",
+        "version": "{{user `version`}}",
+        "no_release": true
+      }
+    ]
   ]
 }

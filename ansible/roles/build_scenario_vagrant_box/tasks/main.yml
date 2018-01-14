@@ -1,5 +1,27 @@
-- name: Add F26 virtualbox
-  command: vagrant box add fedora/26-cloud-base --provider virtualbox --force
+- name: Add F27 libvirt box
+  command: vagrant box add fedora/27-cloud-base --provider libvirt --force
+  # become: no
+  register: check_if_added
+  until: not check_if_added | failed
+
+- name: Find img file for Fedora box
+  find:
+    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-27-cloud-base
+    recurse: yes
+    patterns: 'box.img'
+  register: results
+  become_user: "{{ ansible_user }}"
+
+- assert:
+    that: results['matched'] == 1
+    msg: "More than one .img files were found for Fedora box"
+
+- name: Set img file path
+  set_fact:
+    img_path: "{{ results['files'][0]['path'] }}"
+
+- name: Add F27 virtualbox
+  command: vagrant box add fedora/27-cloud-base --provider virtualbox --force
   # become: no
   register: check_if_added
   until: not check_if_added | failed
@@ -9,7 +31,7 @@
 
 - name: Find ovf file for Fedora box
   find:
-    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-26-cloud-base
+    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-27-cloud-base
     recurse: yes
     patterns: 'box.ovf'
   register: results
@@ -33,18 +55,15 @@
   set_fact:
     ansible_user_home: "{{ getent_passwd[ansible_user][4] }}"
 
-- name: Export packer template
-  template:
-    src: pulpcore.json.jj2
-    dest: "{{ ansible_user_home }}/pulpcore.json"
-
 - name: Clone scenarios onto build box
   git:
     repo: git@github.com:bmbouter/SELinuxGame.git
-    dest: "{{ ansible_user_home }}/SELinuxGame"
+    dest: "/var/lib/selinuxgame/SELinuxGame"
     update: yes
+    key_file: "/root/.ssh/id_rsa_selinuxgame"
+    version: "build_service"
 
 - name: Build image
-  command: packer build -var 'vagrant_cloud_token'={{ vagrant_cloud_token }} -var 'scenario_name={{ scenario_name }} -force -parallel=false {{ ansible_user_home }}/SELinuxGame/packer-templates/selinux_scenario.json
+  command: packer build -var 'version'={{ version }} -var 'vagrant_cloud_token'={{ vagrant_cloud_token }} -var 'img_path'={{ img_path }} -var 'ovf_path'={{ ovf_path }} -var 'scenario_name'={{ scenario_name }} -force -parallel=false /var/lib/selinuxgame/SELinuxGame/packer_templates/selinux_scenario.json
   async: 0
   poll: 0

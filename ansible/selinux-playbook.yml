@@ -1,7 +1,6 @@
 ---
 - hosts: all
   become: true
-  become_method: sudo
   pre_tasks:
     - name: Check python and ansible versions
       assert:
