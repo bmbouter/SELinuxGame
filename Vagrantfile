@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   scenarios = ['all_about_context_part_1', 'all_about_context_part_2',
                'broken_antivirus', 'fresh_pulp', 'new_ways', 'static',
-               'status_check', 'stayin_alive']
+               'status_check', 'stayin_alive', 'tutorial']
 
   scenarios.each do |scenario|
       # Create the "selinuxgame" box
