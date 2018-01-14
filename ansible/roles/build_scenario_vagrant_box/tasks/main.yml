@@ -61,7 +61,7 @@
     dest: "/var/lib/selinuxgame/SELinuxGame"
     update: yes
     key_file: "/root/.ssh/id_rsa_selinuxgame"
-    version: "build_service"
+    version: "master"
 
 - name: Build image
   command: packer build -var 'version'={{ version }} -var 'vagrant_cloud_token'={{ vagrant_cloud_token }} -var 'img_path'={{ img_path }} -var 'ovf_path'={{ ovf_path }} -var 'scenario_name'={{ scenario_name }} -force -parallel=false /var/lib/selinuxgame/SELinuxGame/packer_templates/selinux_scenario.json
