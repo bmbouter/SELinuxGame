@@ -1,12 +1,12 @@
-#- name: Add F26 libvirt box
-#  command: vagrant box add fedora/26-cloud-base --provider libvirt --force
-#  # become: no
-#  register: check_if_added
-#  until: not check_if_added | failed
+- name: Add F27 libvirt box
+  command: vagrant box add fedora/27-cloud-base --provider libvirt --force
+  # become: no
+  register: check_if_added
+  until: not check_if_added | failed
 
 - name: Find img file for Fedora box
   find:
-    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-26-cloud-base
+    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-27-cloud-base
     recurse: yes
     patterns: 'box.img'
   register: results
@@ -20,18 +20,18 @@
   set_fact:
     img_path: "{{ results['files'][0]['path'] }}"
 
-#- name: Add F26 virtualbox
-#  command: vagrant box add fedora/26-cloud-base --provider virtualbox --force
-#  # become: no
-#  register: check_if_added
-#  until: not check_if_added | failed
+- name: Add F27 virtualbox
+  command: vagrant box add fedora/27-cloud-base --provider virtualbox --force
+  # become: no
+  register: check_if_added
+  until: not check_if_added | failed
 
 - debug:
     var: ansible_user_dir
 
 - name: Find ovf file for Fedora box
   find:
-    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-26-cloud-base
+    paths: ~/.vagrant.d/boxes/fedora-VAGRANTSLASH-27-cloud-base
     recurse: yes
     patterns: 'box.ovf'
   register: results
