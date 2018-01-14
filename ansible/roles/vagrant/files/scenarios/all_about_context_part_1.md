@@ -9,7 +9,7 @@ You login to saruman.securecorp.com (this host) and being to look.
 
 Objective:
 
-* What is the file context of the /home/vagrant/.bash_history file?
+* What is the file context of the /home/vagrant/.bash_profile file?
 * What is the file context of the /etc/passwd file?
 * How are these file contexts stored specifically?
 
