@@ -18,3 +18,4 @@
   systemd:
     state: restarted
     name: httpd
+    enabled: true
