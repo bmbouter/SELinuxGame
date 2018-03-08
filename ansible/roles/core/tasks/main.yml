@@ -13,3 +13,4 @@
       - tmux
       - tree
       - vim-enhanced
+      - policycoreutils-python-utils
